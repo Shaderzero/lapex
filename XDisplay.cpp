@@ -1,11 +1,11 @@
 #pragma once
 struct XDisplay {
 private:
-    Display* display = XOpenDisplay(NULL);
+    Display* display = XOpenDisplay(nullptr);
 
 public:
     XDisplay() {
-        display = XOpenDisplay(NULL);
+        display = XOpenDisplay(nullptr);
         if (!display) throw std::invalid_argument("Could not open display");
     }
 
@@ -17,7 +17,7 @@ public:
         return buttonDown;
     }
 
-    bool keyDown(std::string XK_keyName) {
+    bool keyDown(const std::string& XK_keyName) {
         KeySym keyCode = XStringToKeysym(trimXKPrefix(XK_keyName).c_str());
         return keyDown(keyCode);
     }
@@ -42,7 +42,7 @@ public:
         XFlush(display);
     }
 
-    std::string trimXKPrefix(const std::string& keyName) {
+    static std::string trimXKPrefix(const std::string& keyName) {
         if (keyName.compare(0, 3, "XK_") == 0)
             return keyName.substr(3);
         return keyName;

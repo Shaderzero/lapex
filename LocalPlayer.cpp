@@ -40,18 +40,18 @@ struct LocalPlayer {
         }
     }
 
-    bool isValid() {
+    [[nodiscard]] bool isValid() const {
         return base != 0;
     }
 
-    bool isCombatReady() {
+    [[nodiscard]] bool isCombatReady() const {
         if (base == 0) return false;
         if (dead) return false;
         if (knocked) return false;
         return true;
     }
 
-    void lookAt(FloatVector2D angles) {
+    void lookAt(FloatVector2D angles) const {
         mem::Write<FloatVector2D>(base + OFF_VIEW_ANGLES, angles.clamp());
     }
 };

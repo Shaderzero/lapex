@@ -29,6 +29,9 @@ struct ConfigLoader {
     int AIMBOT_MAX_DISTANCE = 100;
     int AIMBOT_MIN_DISTANCE = 1;
 
+    //triggerbot
+    std::string TRIGGERBOT_ACTIVATED_BY_BUTTON = "XK_KP_4";
+
     //sense
     bool SENSE_ENEMY_COLOR_SHIELD_BASED = true;
 
@@ -53,52 +56,54 @@ struct ConfigLoader {
     int SENSE_ENEMY_LOCKEDON_BORDER_STYLE = 108;
     int SENSE_ENEMY_LOCKEDON_BORDER_WIDTH = 120;
 
-    void loadVariables(std::string key, std::string val) {
+    void loadVariables(const std::string& key, std::string val) {
         //features
-        FEATURE_AIMBOT_ON = (key.compare("FEATURE_AIMBOT_ON") != 0) ? FEATURE_AIMBOT_ON : toBool(val);
-        FEATURE_SENSE_ON = (key.compare("FEATURE_SENSE_ON") != 0) ? FEATURE_SENSE_ON : toBool(val);
-        FEATURE_TRIGGERBOT_ON = (key.compare("FEATURE_TRIGGERBOT_ON") != 0) ? FEATURE_TRIGGERBOT_ON : toBool(val);
-        FEATURE_NORECOIL_ON = (key.compare("FEATURE_NORECOIL_ON") != 0) ? FEATURE_NORECOIL_ON : toBool(val);
+        FEATURE_AIMBOT_ON = (key != "FEATURE_AIMBOT_ON") ? FEATURE_AIMBOT_ON : toBool(val);
+        FEATURE_SENSE_ON = (key != "FEATURE_SENSE_ON") ? FEATURE_SENSE_ON : toBool(val);
+        FEATURE_TRIGGERBOT_ON = (key != "FEATURE_TRIGGERBOT_ON") ? FEATURE_TRIGGERBOT_ON : toBool(val);
+        FEATURE_NORECOIL_ON = (key != "FEATURE_NORECOIL_ON") ? FEATURE_NORECOIL_ON : toBool(val);
 
         //norecoil        
-        NORECOIL_PITCH_REDUCTION = (key.compare("NORECOIL_PITCH_REDUCTION") != 0) ? NORECOIL_PITCH_REDUCTION : stoi(val);
-        NORECOIL_YAW_REDUCTION = (key.compare("NORECOIL_YAW_REDUCTION") != 0) ? NORECOIL_YAW_REDUCTION : stoi(val);
+        NORECOIL_PITCH_REDUCTION = (key != "NORECOIL_PITCH_REDUCTION") ? NORECOIL_PITCH_REDUCTION : stoi(val);
+        NORECOIL_YAW_REDUCTION = (key != "NORECOIL_YAW_REDUCTION") ? NORECOIL_YAW_REDUCTION : stoi(val);
 
         //aimbot
-        AIMBOT_ACTIVATED_BY_ATTACK = (key.compare("AIMBOT_ACTIVATED_BY_ATTACK") != 0) ? AIMBOT_ACTIVATED_BY_ATTACK : toBool(val);
-        AIMBOT_ACTIVATED_BY_ADS = (key.compare("AIMBOT_ACTIVATED_BY_ADS") != 0) ? AIMBOT_ACTIVATED_BY_ADS : toBool(val);
-        AIMBOT_ACTIVATED_BY_BUTTON = (key.compare("AIMBOT_ACTIVATED_BY_BUTTON") != 0) ? AIMBOT_ACTIVATED_BY_BUTTON : trimConstructive(val);
-        AIMBOT_SMOOTH = (key.compare("AIMBOT_SMOOTH") != 0) ? AIMBOT_SMOOTH : stoi(val);
-        AIMBOT_SMOOTH_EXTRA_BY_DISTANCE = (key.compare("AIMBOT_SMOOTH_EXTRA_BY_DISTANCE") != 0) ? AIMBOT_SMOOTH_EXTRA_BY_DISTANCE : stoi(val);
-        AIMBOT_FOV = (key.compare("AIMBOT_FOV") != 0) ? AIMBOT_FOV : stod(val);
-        AIMBOT_DEADZONE = (key.compare("AIMBOT_DEADZONE") != 0) ? AIMBOT_DEADZONE : stod(val);
+        AIMBOT_ACTIVATED_BY_ATTACK = (key != "AIMBOT_ACTIVATED_BY_ATTACK") ? AIMBOT_ACTIVATED_BY_ATTACK : toBool(val);
+        AIMBOT_ACTIVATED_BY_ADS = (key != "AIMBOT_ACTIVATED_BY_ADS") ? AIMBOT_ACTIVATED_BY_ADS : toBool(val);
+        AIMBOT_ACTIVATED_BY_BUTTON = (key != "AIMBOT_ACTIVATED_BY_BUTTON") ? AIMBOT_ACTIVATED_BY_BUTTON : trimConstructive(val);
+        AIMBOT_SMOOTH = (key != "AIMBOT_SMOOTH") ? AIMBOT_SMOOTH : stoi(val);
+        AIMBOT_SMOOTH_EXTRA_BY_DISTANCE = (key != "AIMBOT_SMOOTH_EXTRA_BY_DISTANCE") ? AIMBOT_SMOOTH_EXTRA_BY_DISTANCE : stoi(val);
+        AIMBOT_FOV = (key != "AIMBOT_FOV") ? AIMBOT_FOV : stof(val);
+        AIMBOT_DEADZONE = (key != "AIMBOT_DEADZONE") ? AIMBOT_DEADZONE : stof(val);
+
+        TRIGGERBOT_ACTIVATED_BY_BUTTON = (key != "TRIGGERBOT_ACTIVATED_BY_BUTTON") ? TRIGGERBOT_ACTIVATED_BY_BUTTON : trimConstructive(val);
 
         //sense        
-        SENSE_ENEMY_COLOR_SHIELD_BASED = (key.compare("SENSE_ENEMY_COLOR_SHIELD_BASED") != 0) ? SENSE_ENEMY_COLOR_SHIELD_BASED : toBool(val);
+        SENSE_ENEMY_COLOR_SHIELD_BASED = (key != "SENSE_ENEMY_COLOR_SHIELD_BASED") ? SENSE_ENEMY_COLOR_SHIELD_BASED : toBool(val);
 
-        SENSE_ENEMY_VISIBLE_COLOR_RED = (key.compare("SENSE_ENEMY_VISIBLE_COLOR_RED") != 0) ? SENSE_ENEMY_VISIBLE_COLOR_RED : stoi(val);
-        SENSE_ENEMY_VISIBLE_COLOR_GREEN = (key.compare("SENSE_ENEMY_VISIBLE_COLOR_GREEN") != 0) ? SENSE_ENEMY_VISIBLE_COLOR_GREEN : stoi(val);
-        SENSE_ENEMY_VISIBLE_COLOR_BLUE = (key.compare("SENSE_ENEMY_VISIBLE_COLOR_BLUE") != 0) ? SENSE_ENEMY_VISIBLE_COLOR_BLUE : stoi(val);
-        SENSE_ENEMY_VISIBLE_BODY_STYLE = (key.compare("SENSE_ENEMY_VISIBLE_BODY_STYLE") != 0) ? SENSE_ENEMY_VISIBLE_BODY_STYLE : stoi(val);
-        SENSE_ENEMY_VISIBLE_BORDER_STYLE = (key.compare("SENSE_ENEMY_VISIBLE_BORDER_STYLE") != 0) ? SENSE_ENEMY_VISIBLE_BORDER_STYLE : stoi(val);
-        SENSE_ENEMY_VISIBLE_BORDER_WIDTH = (key.compare("SENSE_ENEMY_VISIBLE_BORDER_WIDTH") != 0) ? SENSE_ENEMY_VISIBLE_BORDER_WIDTH : stoi(val);
+        SENSE_ENEMY_VISIBLE_COLOR_RED = (key != "SENSE_ENEMY_VISIBLE_COLOR_RED") ? SENSE_ENEMY_VISIBLE_COLOR_RED : stof(val);
+        SENSE_ENEMY_VISIBLE_COLOR_GREEN = (key != "SENSE_ENEMY_VISIBLE_COLOR_GREEN") ? SENSE_ENEMY_VISIBLE_COLOR_GREEN : stof(val);
+        SENSE_ENEMY_VISIBLE_COLOR_BLUE = (key != "SENSE_ENEMY_VISIBLE_COLOR_BLUE") ? SENSE_ENEMY_VISIBLE_COLOR_BLUE : stof(val);
+        SENSE_ENEMY_VISIBLE_BODY_STYLE = (key != "SENSE_ENEMY_VISIBLE_BODY_STYLE") ? SENSE_ENEMY_VISIBLE_BODY_STYLE : stoi(val);
+        SENSE_ENEMY_VISIBLE_BORDER_STYLE = (key != "SENSE_ENEMY_VISIBLE_BORDER_STYLE") ? SENSE_ENEMY_VISIBLE_BORDER_STYLE : stoi(val);
+        SENSE_ENEMY_VISIBLE_BORDER_WIDTH = (key != "SENSE_ENEMY_VISIBLE_BORDER_WIDTH") ? SENSE_ENEMY_VISIBLE_BORDER_WIDTH : stoi(val);
 
-        SENSE_ENEMY_INVISIBLE_COLOR_RED = (key.compare("SENSE_ENEMY_INVISIBLE_COLOR_RED") != 0) ? SENSE_ENEMY_INVISIBLE_COLOR_RED : stoi(val);
-        SENSE_ENEMY_INVISIBLE_COLOR_GREEN = (key.compare("SENSE_ENEMY_INVISIBLE_COLOR_GREEN") != 0) ? SENSE_ENEMY_INVISIBLE_COLOR_GREEN : stoi(val);
-        SENSE_ENEMY_INVISIBLE_COLOR_BLUE = (key.compare("SENSE_ENEMY_INVISIBLE_COLOR_BLUE") != 0) ? SENSE_ENEMY_INVISIBLE_COLOR_BLUE : stoi(val);
-        SENSE_ENEMY_INVISIBLE_BODY_STYLE = (key.compare("SENSE_ENEMY_INVISIBLE_BODY_STYLE") != 0) ? SENSE_ENEMY_INVISIBLE_BODY_STYLE : stoi(val);
-        SENSE_ENEMY_INVISIBLE_BORDER_STYLE = (key.compare("SENSE_ENEMY_INVISIBLE_BORDER_STYLE") != 0) ? SENSE_ENEMY_INVISIBLE_BORDER_STYLE : stoi(val);
-        SENSE_ENEMY_INVISIBLE_BORDER_WIDTH = (key.compare("SENSE_ENEMY_INVISIBLE_BORDER_WIDTH") != 0) ? SENSE_ENEMY_INVISIBLE_BORDER_WIDTH : stoi(val);
+        SENSE_ENEMY_INVISIBLE_COLOR_RED = (key != "SENSE_ENEMY_INVISIBLE_COLOR_RED") ? SENSE_ENEMY_INVISIBLE_COLOR_RED : stof(val);
+        SENSE_ENEMY_INVISIBLE_COLOR_GREEN = (key != "SENSE_ENEMY_INVISIBLE_COLOR_GREEN") ? SENSE_ENEMY_INVISIBLE_COLOR_GREEN : stof(val);
+        SENSE_ENEMY_INVISIBLE_COLOR_BLUE = (key != "SENSE_ENEMY_INVISIBLE_COLOR_BLUE") ? SENSE_ENEMY_INVISIBLE_COLOR_BLUE : stof(val);
+        SENSE_ENEMY_INVISIBLE_BODY_STYLE = (key != "SENSE_ENEMY_INVISIBLE_BODY_STYLE") ? SENSE_ENEMY_INVISIBLE_BODY_STYLE : stoi(val);
+        SENSE_ENEMY_INVISIBLE_BORDER_STYLE = (key != "SENSE_ENEMY_INVISIBLE_BORDER_STYLE") ? SENSE_ENEMY_INVISIBLE_BORDER_STYLE : stoi(val);
+        SENSE_ENEMY_INVISIBLE_BORDER_WIDTH = (key != "SENSE_ENEMY_INVISIBLE_BORDER_WIDTH") ? SENSE_ENEMY_INVISIBLE_BORDER_WIDTH : stoi(val);
 
-        SENSE_ENEMY_LOCKEDON_COLOR_RED = (key.compare("SENSE_ENEMY_LOCKEDON_COLOR_RED") != 0) ? SENSE_ENEMY_LOCKEDON_COLOR_RED : stoi(val);
-        SENSE_ENEMY_LOCKEDON_COLOR_GREEN = (key.compare("SENSE_ENEMY_LOCKEDON_COLOR_GREEN") != 0) ? SENSE_ENEMY_LOCKEDON_COLOR_GREEN : stoi(val);
-        SENSE_ENEMY_LOCKEDON_COLOR_BLUE = (key.compare("SENSE_ENEMY_LOCKEDON_COLOR_BLUE") != 0) ? SENSE_ENEMY_LOCKEDON_COLOR_BLUE : stoi(val);
-        SENSE_ENEMY_LOCKEDON_BODY_STYLE = (key.compare("SENSE_ENEMY_LOCKEDON_BODY_STYLE") != 0) ? SENSE_ENEMY_LOCKEDON_BODY_STYLE : stoi(val);
-        SENSE_ENEMY_LOCKEDON_BORDER_STYLE = (key.compare("SENSE_ENEMY_LOCKEDON_BORDER_STYLE") != 0) ? SENSE_ENEMY_LOCKEDON_BORDER_STYLE : stoi(val);
-        SENSE_ENEMY_LOCKEDON_BORDER_WIDTH = (key.compare("SENSE_ENEMY_LOCKEDON_BORDER_WIDTH") != 0) ? SENSE_ENEMY_LOCKEDON_BORDER_WIDTH : stoi(val);
+        SENSE_ENEMY_LOCKEDON_COLOR_RED = (key != "SENSE_ENEMY_LOCKEDON_COLOR_RED") ? SENSE_ENEMY_LOCKEDON_COLOR_RED : stof(val);
+        SENSE_ENEMY_LOCKEDON_COLOR_GREEN = (key != "SENSE_ENEMY_LOCKEDON_COLOR_GREEN") ? SENSE_ENEMY_LOCKEDON_COLOR_GREEN : stof(val);
+        SENSE_ENEMY_LOCKEDON_COLOR_BLUE = (key != "SENSE_ENEMY_LOCKEDON_COLOR_BLUE") ? SENSE_ENEMY_LOCKEDON_COLOR_BLUE : stof(val);
+        SENSE_ENEMY_LOCKEDON_BODY_STYLE = (key != "SENSE_ENEMY_LOCKEDON_BODY_STYLE") ? SENSE_ENEMY_LOCKEDON_BODY_STYLE : stoi(val);
+        SENSE_ENEMY_LOCKEDON_BORDER_STYLE = (key != "SENSE_ENEMY_LOCKEDON_BORDER_STYLE") ? SENSE_ENEMY_LOCKEDON_BORDER_STYLE : stoi(val);
+        SENSE_ENEMY_LOCKEDON_BORDER_WIDTH = (key != "SENSE_ENEMY_LOCKEDON_BORDER_WIDTH") ? SENSE_ENEMY_LOCKEDON_BORDER_WIDTH : stoi(val);
     }
 
-    void print() {
+    void print() const {
         printf("\n==================== GRINDER SETTINGS LOADED ========================\n");
 
         //features
@@ -155,8 +160,8 @@ struct ConfigLoader {
     }
 
     void parseLines() {
-        for (int i = 0; i < lines->size(); i++) {
-            std::vector<std::string> lineParts = split(lines->at(i));
+        for (const auto & line : *lines) {
+            std::vector<std::string> lineParts = split(line);
             // line key
             std::string key(lineParts.at(0));
             trim(key);
@@ -170,7 +175,7 @@ struct ConfigLoader {
     }
 
     bool loadFileIntoVector() {
-        struct stat result;
+        struct stat result{};
         if (stat(FILE_NAME.c_str(), &result) == 0) {
             long modTime = result.st_mtime;
             bool fileNeedsReload = modTime > m_lastTimeFileEdited;
@@ -190,7 +195,7 @@ struct ConfigLoader {
         return true;
     }
 
-    bool toBool(std::string str) {
+    static bool toBool(const std::string& str) {
         if (toLowerCase(str) == "y") return true;
         if (toLowerCase(str) == "n") return false;
         if (toLowerCase(str) == "yes") return true;
@@ -200,30 +205,30 @@ struct ConfigLoader {
         throw  std::invalid_argument("Cannot parse string to boolean: " + str);
     }
 
-    void trim(std::string& s) {
+    static void trim(std::string& s) {
         ltrim(s);
         rtrim(s);
     }
 
-    std::string trimConstructive(std::string& s) {
+    static std::string trimConstructive(std::string& s) {
         ltrim(s);
         rtrim(s);
         return s;
     }
 
-    void ltrim(std::string& s) {
+    static void ltrim(std::string& s) {
         s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch)
             { return !std::isspace(ch); }));
     }
 
-    void rtrim(std::string& s) {
+    static void rtrim(std::string& s) {
         s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch)
             { return !std::isspace(ch); })
             .base(),
             s.end());
     }
 
-    std::vector<std::string> split(std::string s) {
+    static std::vector<std::string> split(const std::string& s) {
         std::stringstream ss(s);
         std::istream_iterator<std::string> begin(ss);
         std::istream_iterator<std::string> end;
@@ -231,7 +236,7 @@ struct ConfigLoader {
         return tokens;
     }
 
-    std::string toLowerCase(const std::string& input) {
+    static std::string toLowerCase(const std::string& input) {
         std::string result = input;
         std::transform(result.begin(), result.end(), result.begin(), ::tolower);
         return result;

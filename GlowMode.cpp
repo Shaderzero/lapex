@@ -2,7 +2,7 @@
 struct GlowMode {
     std::byte bodyStyle, borderStyle, borderWidth, transparency;
 
-    GlowMode() {}
+    GlowMode() = default;
 
     GlowMode(int bodyStyle_val, int borderStyle_val, int borderWidth_val, int transparency_val) :
         bodyStyle(static_cast<std::byte>(bodyStyle_val)),
@@ -17,7 +17,7 @@ struct GlowMode {
         borderWidth(borderWidth_val),
         transparency(transparency_val) {}
 
-    bool isZeroVector() const {
+    [[nodiscard]] bool isZeroVector() const {
         return bodyStyle == std::byte(0)
             && borderStyle == std::byte(0)
             && borderWidth == std::byte(0)

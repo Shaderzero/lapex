@@ -1,4 +1,5 @@
 #pragma once
+
 struct AimBot {
     ConfigLoader* cl;
     XDisplay* display;
@@ -15,7 +16,7 @@ struct AimBot {
         this->players = players;
     }
 
-    void aimAssist(int counter) {
+    void aimAssist() {
         if (!active()) { releaseTarget(); return; }
         if (target == nullptr) assignTarget();
         if (target == nullptr) return;
@@ -25,7 +26,7 @@ struct AimBot {
         moveMouse();
     }
 
-    void moveMouse() {
+    void moveMouse() const {
         //calculate smoothing    
         float EXTRA_SMOOTH = cl->AIMBOT_SMOOTH_EXTRA_BY_DISTANCE / target->distanceToLocalPlayer;
         float TOTAL_SMOOTH = cl->AIMBOT_SMOOTH + EXTRA_SMOOTH;
@@ -40,11 +41,11 @@ struct AimBot {
             .multiply(100)
             .divide(TOTAL_SMOOTH);
 
-        const double aimYawIncrement = aimbotDelta.y * -1;
-        const double aimPitchIncrement = aimbotDelta.x;
+        const float aimYawIncrement = aimbotDelta.y * -1;
+        const float aimPitchIncrement = aimbotDelta.x;
         //combine
-        const double totalPitchIncrement = aimPitchIncrement;// + nrPitchIncrement;
-        const double totalYawIncrement = aimYawIncrement;// + nrYawIncrement;
+        const float totalPitchIncrement = aimPitchIncrement;// + nrPitchIncrement;
+        const float totalYawIncrement = aimYawIncrement;// + nrYawIncrement;
         //turn into integers
         int totalPitchIncrementInt = roundHalfEven(atLeast_1_AwayFromZero(totalPitchIncrement));
         int totalYawIncrementInt = roundHalfEven(atLeast_1_AwayFromZero(totalYawIncrement));
@@ -56,24 +57,17 @@ struct AimBot {
         display->moveMouseRelative(totalPitchIncrementInt, totalYawIncrementInt);
     }
 
-    bool active() {
-        bool aimbotIsOn = cl->FEATURE_AIMBOT_ON;
-        bool combatReady = localPlayer->isCombatReady();
-        bool activatedByAttackingAndIsAttacking = cl->AIMBOT_ACTIVATED_BY_ATTACK && localPlayer->inAttack;
-        bool activatedByADSAndIsADSing = cl->AIMBOT_ACTIVATED_BY_ADS && localPlayer->inZoom;
-        bool activatedByButtonAndButtonIsDown = cl->AIMBOT_ACTIVATED_BY_BUTTON != "" && display->keyDown(cl->AIMBOT_ACTIVATED_BY_BUTTON);
-        bool active = aimbotIsOn
-            && combatReady
-            && (activatedByAttackingAndIsAttacking
-                || activatedByADSAndIsADSing
-                || activatedByButtonAndButtonIsDown);
-        return active;
+    [[nodiscard]] bool active() const {
+        return cl->FEATURE_AIMBOT_ON
+            && localPlayer->isCombatReady()
+            && (!cl->AIMBOT_ACTIVATED_BY_BUTTON.empty() && display->keyDown(cl->AIMBOT_ACTIVATED_BY_BUTTON)
+            || cl->AIMBOT_ACTIVATED_BY_ADS && localPlayer->inZoom
+            || cl->AIMBOT_ACTIVATED_BY_ATTACK && localPlayer->inAttack);
     }
 
     void assignTarget() {
-        for (int i = 0;i < players->size();i++) {
-            Player* p = players->at(i);
-            if (!p->isCombatReady())continue;
+        for (auto p : *players) {
+            if (!p->isCombatReady()) continue;
             if (!p->enemy) continue;
             if (!p->visible) continue;
             if (p->aimedAt) continue;
@@ -92,9 +86,8 @@ struct AimBot {
         target = nullptr;
     }
 
-    void resetLockFlag() {
-        for (int i = 0;i < players->size();i++) {
-            Player* p = players->at(i);
+    [[maybe_unused]] void resetLockFlag() const {
+        for (auto p : *players) {
             if (!p->isCombatReady()) continue;
             p->aimbotLocked = false;
         }
@@ -102,13 +95,13 @@ struct AimBot {
             target->aimbotLocked = true;
     }
 
-    int roundHalfEven(float x) {
+    static int roundHalfEven(float x) {
         return (x >= 0.0)
             ? static_cast<int>(std::round(x))
             : static_cast<int>(std::round(-x)) * -1;
     }
 
-    float atLeast_1_AwayFromZero(float num) {
+    static float atLeast_1_AwayFromZero(float num) {
         if (num > 0) return std::max(num, 1.0f);
         return std::min(num, -1.0f);
     }

@@ -51,8 +51,8 @@ struct Player {
         currentHealth = mem::Read<int>(base + OFF_CURRENT_HEALTH);
         currentShields = mem::Read<int>(base + OFF_CURRENT_SHIELDS);
         if (!isPlayer() && !isDummie()) { reset(); return; }
-        dead = (isDummie()) ? false : mem::Read<short>(base + OFF_LIFE_STATE) > 0;
-        knocked = (isDummie()) ? false : mem::Read<short>(base + OFF_BLEEDOUT_STATE) > 0;
+        dead = !(isDummie()) && mem::Read<short>(base + OFF_LIFE_STATE) > 0;
+        knocked = !(isDummie()) && mem::Read<short>(base + OFF_BLEEDOUT_STATE) > 0;
 
         localOrigin = mem::Read<FloatVector3D>(base + OFF_LOCAL_ORIGIN);
         FloatVector3D localOrigin_diff = localOrigin.subtract(localOrigin_prev).normalize().multiply(20);
@@ -88,29 +88,29 @@ struct Player {
         }
     }
 
-    bool isValid() {
+    [[nodiscard]] bool isValid() const {
         return base != 0
             && currentHealth > 0
             && (isPlayer() || isDummie());
     }
 
-    bool isCombatReady() {
-        if (!isValid())return false;
+    [[nodiscard]] bool isCombatReady() const {
+        if (!isValid()) return false;
         if (isDummie()) return true;
         if (dead) return false;
         if (knocked) return false;
         return true;
     }
 
-    bool isPlayer() {
+    [[nodiscard]] bool isPlayer() const {
         return name == "player";
     }
 
-    bool isDummie() {
+    [[nodiscard]] bool isDummie() const {
         return teamNumber == 97;
     }
 
-    void glowFriendly() {
+    void glowFriendly() const {
         if (glowEnable != 1) mem::Write<int>(base + OFF_GLOW_ENABLE, 1);
         if (glowThroughWall != 2) mem::Write<int>(base + OFF_GLOW_THROUGH_WALL, 2);
         if (glowThroughWall != 2) mem::Write<int>(base + OFF_GLOW_FIX, 2);
@@ -118,7 +118,7 @@ struct Player {
         if (highlightId != id) mem::Write<int>(base + OFF_GLOW_HIGHLIGHT_ID + 1, id);
     }
 
-    void glow() {
+    void glow() const {
         if (glowEnable != 1) mem::Write<int>(base + OFF_GLOW_ENABLE, 1);
         if (glowThroughWall != 2) mem::Write<int>(base + OFF_GLOW_THROUGH_WALL, 2);
         if (glowThroughWall != 2) mem::Write<int>(base + OFF_GLOW_FIX, 2);
@@ -127,7 +127,7 @@ struct Player {
         if (highlightId != id) mem::Write<int>(base + OFF_GLOW_HIGHLIGHT_ID + 1, id);
     }
 
-    void glowShieldBased() {
+    void glowShieldBased() const {
         if (glowEnable != 1) mem::Write<int>(base + OFF_GLOW_ENABLE, 1);
         if (glowThroughWall != 2) mem::Write<int>(base + OFF_GLOW_THROUGH_WALL, 2);
         if (glowThroughWall != 2) mem::Write<int>(base + OFF_GLOW_FIX, 2);
@@ -140,11 +140,11 @@ struct Player {
         if (highlightId != id) mem::Write<int>(base + OFF_GLOW_HIGHLIGHT_ID + 1, id);
     }
 
-    FloatVector2D calcDesiredAngles() {
-        return FloatVector2D(calcDesiredPitch(), calcDesiredYaw());
+    [[nodiscard]] FloatVector2D calcDesiredAngles() const {
+        return {calcDesiredPitch(), calcDesiredYaw()};
     }
 
-    float calcDesiredPitch() {
+    [[nodiscard]] float calcDesiredPitch() const {
         if (local) return 0;
         const FloatVector3D shift = FloatVector3D(100000, 100000, 100000);
         const FloatVector3D originA = myLocalPlayer->localOrigin.add(shift);
@@ -155,22 +155,22 @@ struct Player {
         return degrees;
     }
 
-    float calcDesiredYaw() {
+    [[nodiscard]] float calcDesiredYaw() const {
         if (local) return 0;
         const FloatVector2D shift = FloatVector2D(100000, 100000);
         const FloatVector2D originA = myLocalPlayer->localOrigin.to2D().add(shift);
         const FloatVector2D originB = localOrigin_predicted.to2D().add(shift);
         const FloatVector2D diff = originB.subtract(originA);
-        const double yawInRadians = std::atan2(diff.y, diff.x);
+        const float yawInRadians = std::atan2(diff.y, diff.x);
         const float degrees = yawInRadians * (180.0f / M_PI);
         return degrees;
     }
 
-    FloatVector2D calcDesiredAnglesIncrement() {
-        return FloatVector2D(calcPitchIncrement(), calcYawIncrement());
+    [[nodiscard]] FloatVector2D calcDesiredAnglesIncrement() const {
+        return {calcPitchIncrement(), calcYawIncrement()};
     }
 
-    float calcPitchIncrement() {
+    [[nodiscard]] float calcPitchIncrement() const {
         float wayA = aimbotDesiredAngles.x - myLocalPlayer->viewAngles.x;
         float wayB = 180 - abs(wayA);
         if (wayA > 0 && wayB > 0)
@@ -180,7 +180,7 @@ struct Player {
         return wayB;
     }
 
-    float calcYawIncrement() {
+    [[nodiscard]] float calcYawIncrement() const {
         float wayA = aimbotDesiredAngles.y - myLocalPlayer->viewAngles.y;
         float wayB = 360 - abs(wayA);
         if (wayA > 0 && wayB > 0)
@@ -190,7 +190,7 @@ struct Player {
         return wayB;
     }
 
-    float calcAimbotScore() {
+    [[nodiscard]] float calcAimbotScore() const {
         return (1000 - (fabs(aimbotDesiredAnglesIncrement.x) + fabs(aimbotDesiredAnglesIncrement.y)));
     }
 };
