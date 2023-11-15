@@ -24,27 +24,17 @@ bool local_player_t = false;
 bool glow_t = false;
 
 int player_process_counter = 0;
-int global_timer = 1;
 
 void NoRecoilLoop()
 {
     no_recoil_t = true;
-    int loop_process_counter = 0;
     while (no_recoil_t) {
         if (global_pause)
             continue;
-        if (loop_process_counter == player_process_counter)
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(6));
-            continue;
-        }
-        else
-        {
-            loop_process_counter = player_process_counter;
-        }
         try
         {
             noRecoil->controlWeapon();
+            std::this_thread::sleep_for(std::chrono::milliseconds(5));
         }
         catch (...) {
             printf("!!!Unknown error in NoRecoilLoop!!! SLEEPING 10 SECONDS AND TRYING AGAIN! \n");
@@ -56,22 +46,13 @@ void NoRecoilLoop()
 void TriggerBotLoop()
 {
     triggerbot_t = true;
-    int loop_process_counter = 0;
     while (triggerbot_t) {
         try
         {
             if (global_pause)
                 continue;
-            if (loop_process_counter == player_process_counter)
-            {
-                std::this_thread::sleep_for(std::chrono::milliseconds(6));
-                continue;
-            }
-            else
-            {
-                loop_process_counter = player_process_counter;
-            }
             triggerBot->shootAtEnemy();
+            std::this_thread::sleep_for(std::chrono::milliseconds(5));
         }
         catch (...) {
             printf("!!!Unknown error in TriggerBotLoop!!! SLEEPING 10 SECONDS AND TRYING AGAIN! \n");
@@ -90,7 +71,7 @@ void AimBotLoop()
             if (global_pause)
                 continue;
             aimBot->aimAssist();
-            std::this_thread::sleep_for(std::chrono::milliseconds(6));
+            std::this_thread::sleep_for(std::chrono::milliseconds(5));
         }
         catch (...) {
             printf("!!!Unknown error in AimBotLoop!!! SLEEPING 10 SECONDS AND TRYING AGAIN! \n");
@@ -132,8 +113,6 @@ void PlayersLoop()
             std::this_thread::sleep_for(std::chrono::milliseconds(timeLeftToSleep));
             if (player_process_counter > 999) player_process_counter = 0;
 
-            global_timer = processingTime;
-
             if (player_process_counter % 500 == 0)
                 printf("| LOOP[%04d] OK | Processing time: %02dms | Time left to sleep: %02dms | Level: %s |\n",
                        player_process_counter, processingTime, timeLeftToSleep, level->name.c_str());
@@ -153,7 +132,6 @@ void PlayersLoop()
 void LocalPlayerLoop()
 {
     local_player_t = true;
-    int loop_process_counter = 0;
     while (local_player_t) {
         try
         {
@@ -161,7 +139,7 @@ void LocalPlayerLoop()
                 continue;
             localPlayer->readFromMemory();
             if (!localPlayer->isValid()) throw std::invalid_argument("LocalPlayer invalid!");
-            std::this_thread::sleep_for(std::chrono::milliseconds(6));
+            std::this_thread::sleep_for(std::chrono::milliseconds(5));
         }
         catch (std::invalid_argument& e) {
             printf("!!!ERROR in PlayersLoop!!! %s SLEEPING 10 SECONDS AND TRYING AGAIN! \n", e.what());
@@ -177,7 +155,6 @@ void LocalPlayerLoop()
 void GlowLoop()
 {
     glow_t = true;
-    int loop_process_counter = 0;
     while (glow_t) {
         try
         {
@@ -185,7 +162,7 @@ void GlowLoop()
                 continue;
             sense->modifyHighlights();
             sense->glowPlayers();
-            std::this_thread::sleep_for(std::chrono::milliseconds(global_timer));
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
         catch (...) {
             printf("!!!Unknown error in AimBotLoop!!! SLEEPING 10 SECONDS AND TRYING AGAIN! \n");
@@ -219,7 +196,7 @@ int main() {
     noRecoil = new NoRecoil(cl, display, level, localPlayer);
     aimBot = new AimBot(cl, display, level, localPlayer, players);
     triggerBot = new TriggerBot(cl, display, localPlayer, players);
-    sense = new Sense(cl, display, level, localPlayer, players);
+    sense = new Sense(cl, players);
 
     //create threads for features
     std::thread local_player_thr;
